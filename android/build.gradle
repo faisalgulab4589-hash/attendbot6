@@ -1,69 +1,20 @@
-plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
-    id "dev.flutter.flutter-gradle-plugin"
-}
-
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
     }
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
+rootProject.buildDir = '../build'
+
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+subprojects {
+    project.evaluationDependsOn(':app')
 }
 
-android {
-    namespace "com.example.attendbot6" // Agar aapka package name alag hai to wo yahan likhein
-    compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
-    defaultConfig {
-        // TODO: Apni application ka asal ID yahan likhein (e.g., com.yourdomain.attendbot6)
-        applicationId "com.example.attendbot6"
-        
-        // Agar workflow mein 'minSdkVersion' ka error aaye to isko 21 kar dein
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-    }
-
-    buildTypes {
-        release {
-            // GitHub workflow par signing config agar nahi lagayi to 'debugSigningConfig' use hogi
-            signingConfig signingConfigs.debug
-            
-            // Shrunking band rakhne ke liye (jaisa aapne workflow mein --no-shrink lagaya hai)
-            minifyEnabled false
-            shrinkResources false
-        }
-    }
-}
-
-dependencies {
-    // Agar aapka project kotlin use kar raha hai
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
 }
