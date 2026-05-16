@@ -1,45 +1,46 @@
-name: Build AttendBot APK
+name: Build APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable' # Yeh khud-ba-khud latest stable version uthaye ga taake webview chal sake
+          flutter-version: '3.22.2'
+          channel: 'stable'
           cache: true
+
+      - name: Flutter Version
+        run: flutter --version
 
       - name: Clean Project
         run: flutter clean
 
-      - name: Get dependencies
+      - name: Install Dependencies
         run: flutter pub get
 
-      - name: Analyze code
-        run: flutter analyze --no-fatal-infos
-        continue-on-error: true
-
       - name: Build APK
-        run: flutter build apk --release --no-shrink
+        run: flutter build apk --release
 
       - name: Upload APK
-        uses: actions/artifacts@v4 # Updated actions path to handle latest standards
+        uses: actions/upload-artifact@v4
         with:
-          name: AttendBot-APK
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 30
