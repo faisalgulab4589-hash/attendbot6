@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -21,9 +21,11 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
-          channel: 'stable'
+          channel: 'stable' # Yeh khud-ba-khud latest stable version uthaye ga taake webview chal sake
           cache: true
+
+      - name: Clean Project
+        run: flutter clean
 
       - name: Get dependencies
         run: flutter pub get
@@ -36,7 +38,7 @@ jobs:
         run: flutter build apk --release --no-shrink
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/artifacts@v4 # Updated actions path to handle latest standards
         with:
           name: AttendBot-APK
           path: build/app/outputs/flutter-apk/app-release.apk
